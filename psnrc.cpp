@@ -185,7 +185,6 @@ int main(int argc, const char **argv) {
 		mse += diff(pic1[i], pic2[i], pic1.pixel_max, pic2.pixel_max);
 	}
 	mse /= pic1.size();
-	std::cout << "PSNR between \"" << argv[1] << "\" and \"" << argv[2]
-	          << "\": " << -10 * log10(mse) << "\n";
+	std::cout << -10 * log10(mse) << "\n";
 	return 0;
 }
