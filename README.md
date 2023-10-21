@@ -20,6 +20,6 @@ g++ psnrc.cpp -o psnrc -O2
 ## Usage
 
 ```
-psnrc <path-to-1st-ppm> <path-to-2nd-ppm>
+psnrc <path-to-1st-ppm> <path-to-2nd-ppm> [<path-to-diff-ppm-output>]
 ```
 

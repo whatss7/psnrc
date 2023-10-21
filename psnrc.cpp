@@ -129,8 +129,8 @@ picture ParsePPM(std::istream &in) {
 }
 
 int main(int argc, const char **argv) {
-	if (argc != 3) {
-		std::cerr << "error: " << argv[0] << " takes 2 arguments, but "
+	if (argc != 3 && argc != 4) {
+		std::cerr << "error: " << argv[0] << " takes 2-3 arguments, but "
 		          << argc - 1 << " was given.\n";
 		return -1;
 	}
@@ -181,10 +181,34 @@ int main(int argc, const char **argv) {
 		        diff_internal(a.b, b.b)) /
 		       3;
 	};
+	double mx_diff = 0;
+	std::vector<double> v;
 	for (int i = 0; i < pic1.size(); i++) {
-		mse += diff(pic1[i], pic2[i], pic1.pixel_max, pic2.pixel_max);
+		double diff_val = diff(pic1[i], pic2[i], pic1.pixel_max, pic2.pixel_max);
+		mse += diff_val;
+		v.push_back(diff_val);
+		mx_diff = std::max(mx_diff, diff_val);
 	}
 	mse /= pic1.size();
 	std::cout << -10 * log10(mse) << "\n";
+	if (argc == 4) {
+		if (mx_diff < 1e-8) {
+			std::cerr << "PSNR too high, not outputing diff image.\n";
+		} else {
+			std::ofstream pic3_stream(argv[3], std::ios::binary);
+			if (!pic3_stream) {
+				std::cerr << "error: failed to open 3rd picture \"" << argv[3]
+						<< "\".\n";
+				return -1;
+			}
+			pic3_stream << "P3\n" << pic1.width << " " << pic1.height << "\n255\n";
+			for (int i = 0; i < v.size(); i++) {
+				for (int j = 0; j < 3; j++) {
+					pic3_stream << int(round(v[i] / mx_diff * 255)) << (j == 2 ? '\n' : ' ');
+				}
+			}
+			pic3_stream.close();
+		}
+	}
 	return 0;
 }
